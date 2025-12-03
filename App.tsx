@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// App.tsx (Täiendatud)
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DrawerStack from "./navigation/DrawerStack";
+import { ThemeProvider } from "./context/ThemeContext";
+// 💡 LISA Autentimise kontekst
+import { AuthProvider } from "./context/AuthContext"; 
+
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        {/* Autentimise pakkuja peaks olema väljaspool, et ligi pääseda kogu rakenduses */}
+        <AuthProvider> 
+          <ThemeProvider>
+            <NavigationContainer>
+              {/* DrawerStack on siin, aga see peab ise otsustama, kas näidata AuthScreeni või põhiekraane */}
+              <DrawerStack />
+            </NavigationContainer>
+          </ThemeProvider>
+        </AuthProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
