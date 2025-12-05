@@ -1,13 +1,16 @@
 // screens/AuthScreen.tsx (Täiendatud fail)
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useAuth } from '../context/AuthContext'; // IMPORDI Context
+import type { DrawerParamList } from "../navigation/DrawerStack";
 
 type AuthMode = 'login' | 'register';
 
 export default function AuthScreen() {
   // Impordi login funktsioon Context'ist
-  const { login } = useAuth(); 
+  const { login, register } = useAuth();
+  const navigation = useNavigation<NavigationProp<DrawerParamList>>();
 
   // ... (Jäta need muud muutujad samaks)
   const [email, setEmail] = useState("user@user.ee");
@@ -21,20 +24,26 @@ export default function AuthScreen() {
   const handleSubmit = () => {
     if (isLogin) {
       //  SISSELOGIMISE LOOGIKA
-      if (password === "user") {
-        login("user"); // Kasutaja sisestas õige parooli -> Logi sisse nimega "user"
+      const success = login(email, password);
+      if (success) {
+        navigation.navigate("Avaleht"); // Navigate to home page
       } else {
         // Ebaõnnestunud sisselogimine
-        Alert.alert("Sisselogimine ebaõnnestus", "Vale parool või e-posti aadress. Proovi parooliga 'user'.");
+        Alert.alert("Sisselogimine ebaõnnestus", "Vale parool või e-posti aadress.");
       }
     } else {
-      // Registreerimise loogika (Seda sa praegu ei vaja, aga see jääb alles)
+      // Registreerimise loogika
       if (password !== confirmPassword) {
          Alert.alert("Viga", "Paroolid ei ühti!");
          return;
       }
-      // Edaspidine Registreerimise loogika...
-      Alert.alert("Registreerimine", "Registreerimise funktsionaalsus on väljatöötamisel.");
+      if (!email || !password) {
+         Alert.alert("Viga", "Palun täida kõik väljad!");
+         return;
+      }
+      // Registreeri kasutaja
+      register(email, password);
+      navigation.navigate("Avaleht"); // Navigate to home page
     }
   };
 

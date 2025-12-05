@@ -2,9 +2,11 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const navigation = useNavigation<NavigationProp<Record<string, object | undefined>>>();
+  const { isLoggedIn, username, logout } = useAuth();
 
   return (
     <View style={styles.wrapper}>
@@ -32,21 +34,34 @@ export default function Header() {
           <Text style={styles.titleText}>Rolling Home Rent</Text>
         </View>
 
-        {/* User ikoon paremal */}
-        <TouchableOpacity
-          style={styles.userTouch}
-          onPress={() => navigation.navigate("Sisselogimine")}
-          accessibilityLabel="Ava sisselogimise ja registreerimise aken"
-        >
-          <Text style={styles.userIcon}>👤</Text>
-        </TouchableOpacity>
+        {/* User info paremal */}
+        {isLoggedIn && username ? (
+          <View style={styles.userInfo}>
+            <Text style={styles.usernameText}>{username}</Text>
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={logout}
+              accessibilityLabel="Logi välja"
+            >
+              <Text style={styles.logoutText}>Logi välja</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.userTouch}
+            onPress={() => navigation.navigate("Sisselogimine")}
+            accessibilityLabel="Ava sisselogimise ja registreerimise aken"
+          >
+            <Text style={styles.userIcon}>👤</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 }
 
-const HEADER_HEIGHT = 64;
-const BLUE_BAR_HEIGHT = 36;
+const HEADER_HEIGHT = 98;
+const BLUE_BAR_HEIGHT = 92;
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -97,5 +112,28 @@ const styles = StyleSheet.create({
   userIcon: {
     fontSize: 30,
     color: "#333",
+  },
+  userInfo: {
+    marginLeft: 12,
+    padding: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  usernameText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+  },
+  logoutButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: "#007AFF",
+    borderRadius: 4,
+  },
+  logoutText: {
+    fontSize: 12,
+    color: "#fff",
+    fontWeight: "600",
   },
 });

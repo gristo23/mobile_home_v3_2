@@ -13,12 +13,15 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import type { DrawerParamList } from "../navigation/DrawerStack";
 import type { van } from "../types/van";
 import { Calendar } from "react-native-calendars";
+import { useTheme } from "../context/ThemeContext";
 
 type DetailRoute = RouteProp<DrawerParamList, "Auto detailid">;
 
 export default function VanDetailScreen() {
   const route = useRoute<DetailRoute>();
   const { van } = route.params;
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
@@ -62,7 +65,7 @@ export default function VanDetailScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, isDark && styles.containerDark]}>
       <Image
         source={{ uri: imageSrc }}
         style={styles.image}
@@ -70,23 +73,23 @@ export default function VanDetailScreen() {
         onError={() => setImageSrc(`https://picsum.photos/600/400?random=${van.id}`)}
       />
       <View style={styles.header}>
-        <Text style={styles.title}>{van.title}</Text>
+        <Text style={[styles.title, isDark && styles.textDark]}>{van.title}</Text>
         <Text style={styles.price}>€{van.price}/päev</Text>
       </View>
-      <Text style={styles.location}>{van.location}</Text>
-      <Text style={styles.description}>{van.description}</Text>
+      <Text style={[styles.location, isDark && styles.textLight]}>{van.location}</Text>
+      <Text style={[styles.description, isDark && styles.textDark]}>{van.description}</Text>
 
-      <Text style={styles.subheading}>Funktsioonid</Text>
+      <Text style={[styles.subheading, isDark && styles.textDark]}>Funktsioonid</Text>
       <View style={styles.features}>
         {van.features.map((f, idx) => (
           <View key={idx} style={styles.featureItem}>
             <Text style={styles.bullet}>•</Text>
-            <Text style={styles.featureText}>{f}</Text>
+            <Text style={[styles.featureText, isDark && styles.textDark]}>{f}</Text>
           </View>
         ))}
       </View>
 
-      <Text style={styles.subheading}>Vali kuupäevad</Text>
+      <Text style={[styles.subheading, isDark && styles.textDark]}>Vali kuupäevad</Text>
       <Calendar
         onDayPress={handleDayPress}
         markingType="period"
@@ -101,7 +104,8 @@ export default function VanDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: { padding: 16, backgroundColor: "#fff" },
+  containerDark: { backgroundColor: "#1a1a1a" },
   image: { width: "100%", height: 240, borderRadius: 12, backgroundColor: "#eee" },
   header: {
     flexDirection: "row",
@@ -109,11 +113,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     alignItems: "center",
   },
-  title: { fontSize: 22, fontWeight: "bold" },
-  price: { fontSize: 18, fontWeight: "600", color: "#007AFF" },
+  title: { fontSize: 22, fontWeight: "bold", color: "#000" },
+  textDark: { color: "#fff" },
+  textLight: { color: "#ccc" },
+  price: { fontSize: 18, fontWeight: "600", color: "#007AFF", marginRight: 11 },
   location: { marginTop: 4, fontSize: 16, color: "#555" },
   description: { marginTop: 12, fontSize: 15, color: "#333" },
-  subheading: { marginTop: 16, fontSize: 16, fontWeight: "600" },
+  subheading: { marginTop: 16, fontSize: 16, fontWeight: "600", color: "#000" },
   features: { marginTop: 8 },
   featureItem: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
   bullet: { fontSize: 16, marginRight: 6, color: "#007AFF" },

@@ -6,8 +6,9 @@ import React, { createContext, useState, useContext, ReactNode } from 'react';
 interface AuthContextType {
   isLoggedIn: boolean;
   username: string | null;
-  login: (name: string) => void;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
+  register: (email: string, password: string) => void;
 }
 
 // Loo kontekst
@@ -21,10 +22,21 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [users, setUsers] = useState<Record<string, string>>({ 'user@user.ee': 'user' }); // email: password
 
-  const login = (name: string) => {
+  const login = (email: string, password: string) => {
+    if (users[email] && users[email] === password) {
+      setIsLoggedIn(true);
+      setUsername(email.split('@')[0]);
+      return true;
+    }
+    return false;
+  };
+
+  const register = (email: string, password: string) => {
+    setUsers(prev => ({ ...prev, [email]: password }));
     setIsLoggedIn(true);
-    setUsername(name);
+    setUsername(email.split('@')[0]);
   };
 
   const logout = () => {
@@ -33,7 +45,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, username, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, username, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

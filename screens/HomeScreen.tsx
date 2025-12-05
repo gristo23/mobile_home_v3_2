@@ -18,6 +18,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { theme, toggleTheme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
+  const isDark = theme === "dark";
 
   return (
     <ImageBackground
@@ -68,11 +69,16 @@ export default function HomeScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalBackground}>
-          <View style={styles.modalContent}>
-            <Text style={styles.title}>Seaded</Text>
+          <View style={[styles.modalContent, isDark && styles.modalContentDark]}>
+            <Text style={[styles.title, isDark && styles.textDark]}>Seaded</Text>
             <View style={styles.row}>
-              <Text>Dark Mode</Text>
-              <Switch value={theme === "dark"} onValueChange={toggleTheme} />
+              <Text style={isDark && styles.textDark}>Dark Mode</Text>
+              <Switch 
+                value={isDark} 
+                onValueChange={toggleTheme}
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={isDark ? '#007AFF' : '#f4f3f4'}
+              />
             </View>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Text style={styles.closeButton}>Sulge</Text>
@@ -141,7 +147,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
   },
+  modalContentDark: {
+    backgroundColor: "#2a2a2a",
+  },
   title: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
+  textDark: {
+    color: "#fff",
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
